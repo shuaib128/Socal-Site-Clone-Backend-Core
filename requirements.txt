@@ -70,7 +70,6 @@ soupsieve==2.4.1
 sqlparse==0.4.4
 storage==0.0.4.3
 Twisted==22.10.0
-twisted-iocpsupport==1.0.3
 txaio==23.1.1
 typing-extensions==4.5.0
 urllib3==2.0.3
