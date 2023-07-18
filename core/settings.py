@@ -1,16 +1,18 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
 from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-21bpp(@!!nnuthl@_4-w^4f3cfcqhf%&5@m3wa6zc171+p&jx3'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -18,13 +20,15 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://socialsiteclone.netlify.app"
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -52,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_grip.GripMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -73,6 +78,22 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+# Daphne
+ASGI_APPLICATION = "core.asgi.application"
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     }
+# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_URL")],
+        },
+    },
+}
 
 
 # Database

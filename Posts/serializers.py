@@ -35,12 +35,16 @@ class MediaSerializer(serializers.ModelSerializer):
 
 #Reply serilizer
 class ReplySerializer(serializers.ModelSerializer):
+    likes = AuthorSerializer(many=True)
+    author = AuthorSerializer()
     class Meta:
         model = Reply
         fields = '__all__' 
 
 #Comment serilizer
 class CommentSerializer(serializers.ModelSerializer):
+    author = AuthorSerializer()
+    likes = AuthorSerializer(many=True)
     replyes = ReplySerializer(many=True)
     class Meta:
         model = Comment
@@ -50,6 +54,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     auhtor = AuthorSerializer()
     media_files = MediaSerializer(many=True)
+    likes = AuthorSerializer(many=True)
     comments = CommentSerializer(many=True)
     class Meta:
         model = Post

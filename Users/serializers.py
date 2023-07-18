@@ -30,21 +30,22 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email address is already in use.")
+            raise serializers.ValidationError(
+                "Email address is already in use.")
         return value
-    
+
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError("Username is already in use.")
         return value
-    
+
     def create(self, validated_data):
         profile_image_data = self.initial_data["profile_image"]
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            first_name = validated_data['first_name'],
-            last_name = validated_data['last_name']
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name']
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -52,7 +53,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if profile_image_data:
             self.save_profile_picture(user, profile_image_data)
         return user
-    
+
     def save_profile_picture(self, user, profile_picture_data):
         profile_object = get_object_or_404(Profile, username=user.username)
 

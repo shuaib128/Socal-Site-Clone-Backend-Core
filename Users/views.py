@@ -12,6 +12,8 @@ from django.shortcuts import get_object_or_404
 from .models import Profile
 from .serializers import ProfileSerialzer
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
+from Posts.models import Post
+from Posts.serializers import PostSerializer
 
 # Create your views here.
 class UserCreateAPIView(generics.CreateAPIView):
@@ -51,6 +53,66 @@ class UserView(APIView):
         user = get_user_from_token(token)
         profile = get_object_or_404(Profile, user=str(user.id))
         serilizer = ProfileSerialzer(profile)
+
+        # Return a response
+        return Response(serilizer.data)
+    
+
+#User Follow Hanlder
+class UserFollowerAddView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        # Retrieve the JWT token from the request header
+        auth_header = request.headers.get('Authorization')
+        if auth_header is None:
+            return Response({'error': 'Authorization header is missing'})
+
+        auth_header_parts = auth_header.split(' ')
+        if len(auth_header_parts) != 2 or auth_header_parts[0] != 'Bearer':
+            return Response({'error': 'Authorization header is not in the correct format'})
+
+        token = auth_header_parts[1]
+
+        # Retrieve the authenticated user from the token
+        user = get_user_from_token(token)
+        follower = get_object_or_404(Profile, user=str(user.id))
+        following = get_object_or_404(Profile, id=str(pk))
+
+        if following.followers.filter(id=follower.id).exists():
+            following.followers.remove(follower)
+        else:
+            following.followers.add(follower)
+
+        serilizer = ProfileSerialzer(following)
+
+        # Return a response
+        return Response(serilizer.data)
+    
+class UserByIdView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        # Retrieve the authenticated user from the token
+        profile = get_object_or_404(Profile, id=pk)
+        serilizer = ProfileSerialzer(profile)
+
+        # Return a response
+        return Response(serilizer.data)
+    
+
+#User Posts
+class UserPostsView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        # Retrieve the authenticated user from the token
+        profile = get_object_or_404(Profile, id=pk)
+        posts = Post.objects.filter(auhtor__id=pk)
+        serilizer = PostSerializer(posts, many=True)
 
         # Return a response
         return Response(serilizer.data)

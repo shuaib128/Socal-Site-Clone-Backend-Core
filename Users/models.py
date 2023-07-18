@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    followers = models.ManyToManyField(
+        'self', symmetrical=False,
+        related_name='following', blank=True, null=True
+    )
     # Additional fields for the profile model
     username = models.CharField(max_length=200, default="username")
     firstname = models.CharField(max_length=200, default="firstname")
@@ -11,6 +15,10 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     email = models.EmailField(blank=True)
     profile_picture = models.ImageField(
+        upload_to='profile_pictures/', 
+        default='default_profile_picture.png'
+    )
+    cover_image = models.ImageField(
         upload_to='profile_pictures/', 
         default='default_profile_picture.png'
     )

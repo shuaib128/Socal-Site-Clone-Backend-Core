@@ -80,33 +80,27 @@ def encode_video_to_hls(mediafile_id):
 
 #Reply models
 class Reply(models.Model):
-    name = models.CharField(max_length=1000, default="Image Name")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, default=0)
     reply = models.TextField(default="Body")
+    likes = models.ManyToManyField(Profile, related_name="Replylikes", null=True, blank=True)
     pub_date = models.DateTimeField(auto_now_add= True)
     last_edited= models.DateTimeField(auto_now= True)
 
     def __str__(self):
-        return str(self.name)
-
-    class Meta:
-        ordering = ['-pub_date',]
+        return str(self.id)
 
 
 #Comments model
 class Comment(models.Model):
-    name = models.CharField(max_length=1000, default="Image Name")
     author = models.ForeignKey(Profile, on_delete=models.CASCADE, default=0)
     comment = models.TextField(default="Body")
     pub_date = models.DateTimeField(auto_now_add= True)
+    likes = models.ManyToManyField(Profile, related_name="Commentlikes", null=True, blank=True)
     last_edited= models.DateTimeField(auto_now= True)
     replyes = models.ManyToManyField(Reply, related_name='Replyes', null=True, blank=True)
 
     class Meta:
         ordering = ['pub_date',]
-    
-    def __str__(self):
-        return str(self.name)
 
 class Post(models.Model):
     auhtor = models.ForeignKey(Profile, on_delete=models.CASCADE)
@@ -114,10 +108,8 @@ class Post(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     media_files = models.ManyToManyField(MediaFile, related_name='media', null=True, blank=True)
-    comments = models.ManyToManyField(Comment, related_name='Comments', null=True, blank=True,)
-
-    class Meta:
-        ordering = ['-date_created',]
+    likes = models.ManyToManyField(Profile, related_name="likes", null=True, blank=True)
+    comments = models.ManyToManyField(Comment, related_name='Comments', null=True, blank=True)
 
     #Get reading Time
     def get_readtime(self):
