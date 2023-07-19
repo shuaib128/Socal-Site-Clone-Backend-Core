@@ -1,5 +1,5 @@
 [deploy]
-startCommand = "python manage.py collectstatic --noinput && daphne 'core.asgi:application' --port $PORT --bind 0.0.0.0 -v2 & python manage.py process_tasks"
+startCommand = "daphne 'core.asgi:application' --port $PORT --bind 0.0.0.0 -v2 & python manage.py process_tasks"
 
 [build]
 packages = ["ffmpeg"]
