@@ -51,6 +51,7 @@ packaging==23.1
 paramiko==3.2.0
 Pillow==9.5.0
 prompt-toolkit==3.0.38
+psycopg2==2.9.6
 pubcontrol==3.4.0
 pyasn1==0.5.0
 pyasn1-modules==0.3.0
