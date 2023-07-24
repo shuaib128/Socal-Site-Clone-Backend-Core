@@ -191,7 +191,7 @@ class PostVideoCreateAPIView(APIView):
                 media_file = MediaFile.objects.create(filename=filename)
 
             if chunk:
-                media_file.append_chunk(chunk.read())
+                media_file.append_chunk(chunk)
 
             serializer = MediaSerializer(media_file)
             return Response(serializer.data, status=status.HTTP_200_OK)

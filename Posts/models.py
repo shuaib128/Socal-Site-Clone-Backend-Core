@@ -10,6 +10,7 @@ from django.utils.deconstruct import deconstructible
 from django.core.files.base import ContentFile
 from background_task import background
 from django.conf import settings
+import base64
 
 # Create your models here.
 #Media files (Images/Videos)
@@ -28,7 +29,15 @@ class MediaFile(models.Model):
     hls_directory = models.CharField(max_length=255, null=True, blank=True)
 
     #Append chunk method
-    def append_chunk(self, chunk):
+    def append_chunk(self, chunk_base64):
+        # Remove the "data:application/octet-stream;base64," prefix from the Base64 string
+        prefix = "data:application/octet-stream;base64,"
+        if chunk_base64.startswith(prefix):
+            chunk_base64 = chunk_base64[len(prefix):]
+
+        # decode the base64 string into bytes
+        chunk = base64.b64decode(chunk_base64)
+
         if self.file:
             self.file.close()
             self.file.open(mode='ab') # append in binary mode
