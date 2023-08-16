@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import (
     UserCreateAPIView, UserView, LogoutView, UserPostsView, UserByIdView,
-    UserFollowerAddView
+    UserFollowerAddView, AvatarPictureUpdateView
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('author/', UserView.as_view(), name='UserView'),
+    path('author/update/', AvatarPictureUpdateView.as_view(), name='AvatarPictureUpdateView'),
     path('user/<int:pk>/', UserByIdView.as_view(), name='UserByIdView'),
     path('user/follower/add/<int:pk>/', UserFollowerAddView.as_view(), name='UserFollowerAddView'),
     path('user/posts/<int:pk>/', UserPostsView.as_view(), name='UserPostsView'),

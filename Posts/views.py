@@ -79,6 +79,30 @@ class PostDetailEditView(APIView):
         except Post.DoesNotExist:
             return Response({'error': 'Post not found'}, status=404)
         
+class PostDeleteView(APIView):
+    def get(self, request, pk):
+        try:
+            # Retrieve the JWT token from the request header
+            auth_header = request.headers.get('Authorization')
+            if auth_header is None:
+                return Response({'error': 'Authorization header is missing'})
+
+            auth_header_parts = auth_header.split(' ')
+            if len(auth_header_parts) != 2 or auth_header_parts[0] != 'Bearer':
+                return Response({'error': 'Authorization header is not in the correct format'})
+
+            token = auth_header_parts[1]
+            user = get_user_from_token(token)
+            profile = get_object_or_404(Profile, user=str(user.id))
+            post = get_object_or_404(Post, id=pk)
+            
+            if(profile.id == post.auhtor.id):
+                post.delete()
+                return Response("200")
+            return Response("404")
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=404)
+        
 #Create post
 class PostCreateAPIView(APIView):
     authentication_classes = [JWTAuthentication]
@@ -221,7 +245,7 @@ class FinalizeUploadView(APIView):
             post.save()
 
             # Start encoding the video to HLS
-            video_file.start_encoding()
+            # video_file.start_encoding()
             
             return Response(
                 {"Video Added Successfully"}, 

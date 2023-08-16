@@ -4,7 +4,7 @@ from .views import (
     PostVideoCreateAPIView, FinalizeUploadView, PostLikeView,
     PostCommentView, PostCommentLikeView, PostReplyView,
     PostReplyLikeView, PostDetailView, PostDetailEditView,
-    PostSearchAPIView
+    PostSearchAPIView, PostDeleteView
 )
 
 urlpatterns = [
@@ -13,6 +13,7 @@ urlpatterns = [
     path('post/<int:pk>/', PostDetailView.as_view(), name='PostDetailView'),
     path('post/create/', PostCreateAPIView.as_view(), name='PostCreate'),
     path('post/edit/<int:pk>/', PostDetailEditView.as_view(), name='PostDetailEditView'),
+    path('post/delete/<int:pk>/', PostDeleteView.as_view(), name='PostDeleteView'),
     path('post/add/media/image/', PostImageCreateAPIView.as_view(), name='AddImage'),
     path('post/add/media/video/', PostVideoCreateAPIView.as_view(), name='AddVideo'),
     path('post/add/media/video/finalize/', FinalizeUploadView.as_view(), name='FinalizeVideo'),

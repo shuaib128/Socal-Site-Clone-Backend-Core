@@ -1,3 +1,4 @@
+import base64
 from rest_framework import generics, status
 from django.contrib.auth.models import User
 from .serializers import UserCreateSerializer
@@ -14,12 +15,52 @@ from .serializers import ProfileSerialzer
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from Posts.models import Post
 from Posts.serializers import PostSerializer
+from django.core.files.base import ContentFile
 
 # Create your views here.
 class UserCreateAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = (AllowAny,)
+
+# Avatar picture update view
+class AvatarPictureUpdateView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def post(self, request, format=None):
+        try:
+            # User data
+            user = get_object_or_404(Profile, id=request.data['userID'])
+
+            if 'profile_image' in request.data:
+                profile_image = request.data['profile_image']
+                format, imgstr = profile_image.split(';base64,')
+                ext = format.split('/')[-1]
+                file_content = ContentFile(base64.b64decode(imgstr), name=f"image.{ext}")
+                user.profile_picture.save(f"image.{ext}", file_content, save=True)
+
+            if 'cover_image' in request.data:
+                cover_image = request.data['cover_image']
+                format, imgstr = cover_image.split(';base64,')
+                ext = format.split('/')[-1]
+                file_content = ContentFile(base64.b64decode(imgstr), name=f"image.{ext}")
+                user.cover_image.save(f"image.{ext}", file_content, save=True)
+
+            serializer = ProfileSerialzer(user)      
+
+            return Response(
+                {
+                    'message': 'Image Update suffcefull',
+                    'user': serializer.data
+                }, status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 # Decode the token payload to get the user ID
