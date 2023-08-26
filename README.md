@@ -172,3 +172,36 @@ This Django project allows users to upload media content in chunks, offering a m
 - **Add Image Chunk**: `post/add/media/image/`
 - **Add Video Chunk**: `post/add/media/video/`
 - **Finalize Video**: `post/add/media/video/finalize/`
+
+# HLS Video Processing in My Django Project
+
+In this Django application, I've integrated state-of-the-art video processing capabilities, harnessing the potential of HTTP Live Streaming (HLS) to deliver an optimized video streaming experience.
+
+## What is HLS?
+
+HLS, short for HTTP Live Streaming, is a streaming protocol pioneered by Apple. It's designed to deliver media content, primarily video, over the internet. The core principle behind HLS is segmenting a video file into smaller chunks and creating a playlist for these chunks, ensuring smooth playback across diverse network conditions.
+
+## The HLS Conversion Process I Implemented:
+
+1. **MediaFile Model**:
+   - **Reference**: The foundation is the `MediaFile` model (`MediaFile(models.Model)`), where I store video files uploaded by users.
+   - **Chunked Uploads**: Through the `append_chunk` method in the `MediaFile` model, I've enabled chunked uploads. This approach ensures that segments of video data can be sent independently, and then the system assembles them in sequence.
+
+2. **Triggering HLS Encoding**:
+   - After a video is completely uploaded, the `start_encoding` method in the `MediaFile` model triggers the HLS encoding process. By running this process in the background, the main application remains seamless and user-friendly.
+
+3. **Utilizing FFmpeg**:
+   - **Reference**: My `encode_video_to_hls` function taps into FFmpeg for the video conversion.
+   - FFmpeg plays a key role in segmenting the video into varying resolutions (like 360p, 720p). This ensures adaptive playback, catering to different devices and internet speeds.
+
+4. **Structured Storage**:
+   - The segmented video chunks, along with their master playlist, are organized in a directory (evident from `os.path.join(settings.MEDIA_ROOT, 'hls', str(mediafile.id))`). This neat arrangement ensures swift access during streaming.
+
+5. **Adaptive Streaming Experience**:
+   - During playback, the HLS protocol combined with my backend ensures viewers receive the optimal video quality according to their network. Should there be any fluctuation, HLS adjusts accordingly, promising a smooth viewing experience.
+
+## Key Takeaways:
+
+- **Uninterrupted Streaming**: Thanks to HLS, viewers experience minimal buffering, even in fluctuating network scenarios.
+- **Optimal Quality**: My system ensures the best possible video quality for every user.
+- **Universal Playback**: Whether on mobile devices, desktops, or smart TVs, my solution promises top-notch video streaming.
